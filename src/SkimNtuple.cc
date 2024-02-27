@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
     }
 
     //open each ROOT file and add the normalization branch
+    cout<<"About to Read Input Lines. If no output, no such input list";
     for(auto& line : inputLines){
         //parse input -- input lines should be in the form datasetName fileName
         istringstream buf(line);
@@ -43,19 +44,27 @@ int main(int argc, char* argv[]) {
         vector<std::string> inputs(beg, end);
         
         string fileName = inputs[0];
-
+	cout << "fileName before concat" << fileName << endl;
         //create output file
 	string outputfilename = Form("%s/%s_%s.root", outputDir.c_str(), 
 				     fileName.substr(fileName.find_last_of("/")+1, fileName.find_last_of(".")-fileName.find_last_of("/")-1).c_str(),
 				     outputfileLabel.c_str());
 	cout << "Output file: " << outputfilename << "\n";
         TFile *outputFile = new TFile(outputfilename.c_str(), "RECREATE");
-	
-        //loop over all TTrees in the file and add the weight branch to each of them
+	std::string eosString = "/eos/uscms";
+	std::string rootString = "root://cmsxrootd.fnal.gov/";
+	if (fileName.find(rootString) != string::npos) {
+		cout<<"changing effective file name"<<endl;
+		fileName.replace(0,rootString.length(),eosString);
+    	}
+	cout << "fileName after concat: " << fileName << endl;
+	//loop over all TTrees in the file and add the weight branch to each of them
         TFile *inputFile = new TFile(fileName.c_str(), "READ");
         assert(inputFile);
         inputFile->cd();
-        TIter nextkey(inputFile->GetListOfKeys());
+        TDirectory *directory = inputFile->GetDirectory("ntuples");
+	TIter nextkey(directory->GetListOfKeys());
+	//TIter nextkey(inputFile->GetListOfKeys());
         TKey *key;
         TKey *previous = NULL;
         string dirName = "";

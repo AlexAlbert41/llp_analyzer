@@ -15,7 +15,7 @@ RazorAnalyzer::~RazorAnalyzer()
 {
 
 }
-
+ 
 void RazorAnalyzer::Analyze(bool isData, int option, string outputFileName, string label) {
     cout << "Analyze method called on base RazorAnalyzer instance.  Parameters were: " << isData << " " << option << " " << outputFileName << " " << label << endl;
 }
@@ -64,14 +64,17 @@ void RazorAnalyzer::EnableAllWithEcalRechits(){
 }
 
 void RazorAnalyzer::EnableEventInfo(){
+    //uint runAdd; ULong64_t eventAdd;
     fChain->SetBranchStatus("nPV", 1);
     fChain->SetBranchStatus("pvX", 1);
     fChain->SetBranchStatus("pvY", 1);
     fChain->SetBranchStatus("pvZ", 1);
     fChain->SetBranchStatus("isData", 1);
-    fChain->SetBranchStatus("runNum", 1);
+    //fChain->SetBranchStatus("runNum", 1);
+    
     fChain->SetBranchStatus("lumiNum", 1);
     fChain->SetBranchStatus("eventNum", 1);
+    
     fChain->SetBranchStatus("eventTime", 1);
     fChain->SetBranchStatus("nSlimmedSecondV", 1);
     fChain->SetBranchStatus("fixedGridRhoAll", 1);
@@ -104,12 +107,10 @@ void RazorAnalyzer::EnablePileup(){
 }
 
 void RazorAnalyzer::EnableMuons(){
-    fChain->SetBranchStatus("nMuons", 1);
     fChain->SetBranchStatus("muonE", 1);
     fChain->SetBranchStatus("muonPt", 1);
     fChain->SetBranchStatus("muonEta", 1);
     fChain->SetBranchStatus("muonPhi", 1);
-    fChain->SetBranchStatus("muonCharge", 1);
     fChain->SetBranchStatus("muonIsLoose", 1);
     fChain->SetBranchStatus("muonIsMedium", 1);
     fChain->SetBranchStatus("muonIsTight", 1);
@@ -138,6 +139,7 @@ void RazorAnalyzer::EnableMuons(){
     fChain->SetBranchStatus("muonIsICHEPMedium", 1);
     fChain->SetBranchStatus("muon_passSingleMuTagFilter", 1);
     fChain->SetBranchStatus("muon_passHLTFilter", 1);
+    
 }
 
 void RazorAnalyzer::EnableElectrons(){
@@ -2329,7 +2331,8 @@ float RazorAnalyzer::GetMuonEffectiveArea90(int i, string EraName ){
 bool RazorAnalyzer::isMuonPOGLooseMuon(int i, bool applyID, bool applyIso){
   bool pass = true;
   if (applyID) {
-    if (!(muonIsLoose[i] && fabs(muon_ip3dSignificance[i]) < 4)) pass = false;
+    //if (!(muonIsLoose[i] && fabs(muon_ip3dSignificance[i]) < 4)) pass = false;
+    if (!(muonIsLoose[i]) ) pass = false;
     // if (!(muonIsLoose[i]))pass = false;
   }
   if (applyIso) {
@@ -2342,7 +2345,7 @@ bool RazorAnalyzer::isMuonPOGLooseMuon(int i, bool applyID, bool applyIso){
 bool RazorAnalyzer::isMuonPOGMediumMuon(int i, bool applyID, bool applyIso){
   bool pass = true;
   if (applyID) {
-    if (!(muonIsICHEPMedium[i] && fabs(muon_ip3dSignificance[i]) < 4)) pass = false;
+    if (!(muonIsICHEPMedium[i] )) pass = false;
   }
   if (applyIso) {
     if (!((muon_chargedIso[i] + fmax(0.0,  muon_photonIso[i] + muon_neutralHadIso[i] - 0.5*muon_pileupIso[i])) / muonPt[i] < 0.2)) pass = false;
@@ -2353,7 +2356,7 @@ bool RazorAnalyzer::isMuonPOGMediumMuon(int i, bool applyID, bool applyIso){
 bool RazorAnalyzer::isMuonPOGTightMuon(int i, bool applyID, bool applyIso){
   bool pass = true;
   if (applyID) {
-    if (!(muonIsTight[i] && fabs(muon_ip3dSignificance[i]) < 4)) pass = false;
+    if (!(muonIsTight[i]) ) pass = false;
   }
   if (applyIso) {
     if (!((muon_chargedIso[i] + fmax(0.0,  muon_photonIso[i] + muon_neutralHadIso[i] - 0.5*muon_pileupIso[i])) / muonPt[i] < 0.15)) pass = false;

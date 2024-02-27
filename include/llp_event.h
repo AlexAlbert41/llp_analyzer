@@ -30,6 +30,7 @@ public :
    UInt_t          nSlimmedSecondV;
    UInt_t          lumiNum;
    UInt_t          eventNum;
+   ULong64_t       evtNumLong;
    UInt_t          eventTime;
    Float_t         pvX;
    Float_t         pvY;
@@ -85,6 +86,71 @@ public :
    Float_t         muon_kinkFinder[200];   //[nMuons]
    Float_t         muon_segmentCompatability[200];   //[nMuons]
    Bool_t          muonIsICHEPMedium[200];   //[nMuons]
+   
+   // new variables for nanoAODs (FLOATS) (commented out if already declared)
+   Float_t         muon_dxy[200];   //[nMuons]
+   Float_t         muon_dxyErr[200];   //[nMuons]
+   Float_t         muon_dxybs[200];   //[nMuons]
+   Float_t         muon_dz[200];   //[nMuons]
+   Float_t         muon_dzErr[200];   //[nMuons]
+   Float_t         muon_eta[200];   //[nMuons]
+   //Float_t         muon_ip3d[200];   //[nMuons]
+   Float_t         muon_jetPtRelv2[200];   //[nMuons]
+   Float_t         muon_jetRelIso[200];   //[nMuons]
+   Float_t         muon_mass[200];   //[nMuons]
+   Float_t         muon_miniPFRelIso_all[200];   //[nMuons]
+   Float_t         muon_miniPFRelIso_chg[200];   //[nMuons]
+   Float_t         muon_mvaLowPt[200];   //[nMuons]
+   Float_t         muon_mvaTTH[200];   //[nMuons]
+   Float_t         muon_pfRelIso03_all[200];   //[nMuons]
+   Float_t         muon_pfRelIso03_chg[200];   //[nMuons]
+   Float_t         muon_pfRelIso04_all[200];   //[nMuons]
+   Float_t         muon_phi[200];   //[nMuons]
+   Float_t         muon_pt[200];   //[nMuons]
+   Float_t         muon_ptErr[200];   //[nMuons]
+   Float_t         muon_segmentComp[200];   //[nMuons]
+   Float_t         muon_sip3d[200];   //[nMuons]
+   Float_t         muon_softMva[200];   //[nMuons]
+   Float_t         muon_tkRelIso[200];   //[nMuons]
+   Float_t         muon_tunepRelPt[200];   //[nMuons]
+   // added int variables
+   Int_t           muon_charge[200];   //[nMuons]
+   Int_t           muon_fsrPhotonIdx[200];   //[nMuons]
+   Int_t           muon_jetIdx[200];   //[nMuons]
+   Int_t           muon_nStations[200];   //[nMuons]
+   Int_t           muon_nTrackerLayers[200];   //[nMuons]
+   Int_t           muon_pdgId[200];   //[nMuons]
+   Int_t           muon_tightCharge[200];   //[nMuons]
+   // added bool variables
+   Bool_t          muon_highPurity[200];   //[nMuons]
+   Bool_t          muon_inTimeMuon[200];   //[nMuons]
+   //Bool_t          muon_isGlobal[200];   //[nMuons]
+   Bool_t          muon_isPFcand[200];   //[nMuons]
+   Bool_t          muon_isStandalone[200];   //[nMuons]
+   Bool_t          muon_isTracker[200];   //[nMuons]
+   Bool_t          muon_looseId[200];   //[nMuons]
+   Bool_t          muon_mediumId[200];   //[nMuons]
+   Bool_t          muon_mediumPromptId[200];   //[nMuons]
+   Bool_t          muon_softId[200];   //[nMuons]
+   Bool_t          muon_softMvaId[200];   //[nMuons]
+   Bool_t          muon_tightId[200];   //[nMuons]
+   Bool_t          muon_triggerIdLoose[200];   //[nMuons]
+   // added char variables
+   UChar_t         muon_cleanmask[200];   //[nMuons]
+   UChar_t         muon_highPtId[200];   //[nMuons]
+   UChar_t         muon_jetNDauCharged[200];   //[nMuons]
+   UChar_t         muon_miniIsoId[200];   //[nMuons]
+   UChar_t         muon_multiIsoId[200];   //[nMuons]
+   UChar_t         muon_mvaId[200];   //[nMuons]
+   UChar_t         muon_mvaLowPtId[200];   //[nMuons]
+   UChar_t         muon_pfIsoId[200];   //[nMuons]
+   UChar_t         muon_puppiIsoId[200];   //[nMuons]
+   UChar_t         muon_tkIsoId[200];   //[nMuons]
+   // added HLT bool variables
+   Bool_t          HLT_CscCluster_Loose;   
+   Bool_t          HLT_CscCluster_Medium;  
+   Bool_t          HLT_CscCluster_Tight; 
+   
    Int_t           nElectrons;
    Float_t         eleE[50];   //[nElectrons]
    Float_t         elePt[50];   //[nElectrons]
