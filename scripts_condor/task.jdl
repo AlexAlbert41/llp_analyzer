@@ -1,0 +1,29 @@
+Universe  = vanilla
+Executable = ./run_job_LPC.sh
+Arguments = LLPRun_LPC.sh no 01 $(I) llp_hnl_analyzer /store/user/dildick/analyses/HNL_1L/ CMSSW_10_6_20 2018 HNL_testpoint1
+Log = log/job.$(Cluster).$(Process).log
+Output = out/job.$(Cluster).$(Process).out
+Error = err/job.$(Cluster).$(Process).err
+transfer_input_files = /uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/scripts_condor/run_job_LPC.sh,/uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/scripts_condor/input_list.tgz,/uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/LLPRun_LPC.sh,/uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/bin/Runllp_hnl_analyzer,/uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/JEC.tar.gz,/uscms_data/d3/dildick/work/DisplacedHeavyNeutralLeptonAnalysis/CMSSW_10_6_20/src/llp_analyzer/scripts_condor/input.tar
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+# Resources request
+RequestMemory = 2000
+
+# Jobs selection
+Queue I from (
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+)

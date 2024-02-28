@@ -577,11 +577,7 @@ void HNLMuonSystemTree::InitVariables()
   SingleLepTrigger = false;
 };
 
-/*void HNLMuonSystemTree::RecastEvtNum()
-{
-  UInt_t* ptr = &evtNum;
-  *ptr = static_cast<UInt_t>(evtNumLong);
-}*/
+
 void HNLMuonSystemTree::InitTree()
 {
   //tree_ = new TTree("HNLMuonSystemTree", "HNLMuonSystemTree");
@@ -593,7 +589,7 @@ void HNLMuonSystemTree::InitTree()
   tree_->SetBranchAddress("eventNum",      &evtNumLong);
   
 
-  
+  //unsigned int* evtNum = static_cast<UInt_t*>(&evtNumLong);
   tree_->SetBranchAddress("category",    &category);
   tree_->SetBranchAddress("mX",      &mX);
   tree_->SetBranchAddress("mH",      &mH);
@@ -1233,9 +1229,6 @@ void HNLMuonSystemTree::CreateTree()
   
   tree_ = new TTree("MuonSystem","MuonSystem");
   f_ = 0;
-  //ULong64_t evtNumLong = static_cast<ULong64_t>(evtNum);
-  //ULong64_t evtNumLong = static_cast<ULong64_t>(evtNum);
-  //UInt_t *link = reinterpret_cast<UInt_t*>(&evtNumLong);
   tree_->Branch("runNum",      &runNum,     "runNum/i");      // event run number
   tree_->Branch("lumiSec",     &lumiSec,    "lumiSec/i");     // event lumi section
   tree_->Branch("eventNum",      &evtNumLong,     "eventNum/l");      // event number

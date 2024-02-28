@@ -66,6 +66,6 @@ MakePlots: $(SRCDIR)/SimpleTable.o ./macros/BackgroundStudies/OverlayKinematicPl
 RunDataRunEventIndexing: $(SRCDIR)/RunDataRunEventIndexing.cc $(INCLUDEDIR)/rootdict.o
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
-MergeNtuples: $(SRCDIR)/SimpleTable.o $(SRCDIR)/MergeNtuples.cc $(INCLUDEDIR)/rootdict.o
+MergeNtuples: $(SRCDIR)/SimpleTable.o $(SRCDIR)/MergeNtuples.cc $(INCLUDEDIR)/rootdict.o $(UTILSOBJ) $(SRCDIR)/llp_event.o $(SRCDIR)/RazorAnalyzer.o
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 

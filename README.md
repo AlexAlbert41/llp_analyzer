@@ -6,12 +6,32 @@ Class for analyzing the 2015 razor ntuples
 Setup
 -------------
 
-    cmsrel CMSSW_9_4_4
-    cd CMSSW_9_4_4/src
+    cmsrel CMSSW_10_6_20
+    cd CMSSW_10_6_20/src
     git clone git@github.com:cms-lpc-llp/llp_analyzer.git
     cd llp_analyzer
     make
   
+Setup Coffea 
+-------------
+Instructions for setting up coffea env on LPC cluster:
+```
+    cmsenv
+    source envSetup.sh              #only do this for the first time
+    source coffeaenv/bin/activate   #Load the coffea env everytime
+```
+
+To start jupyter on LPC node and forward to your local terminal, you need to connect to lpc with correct port forwarding:
+```
+    ssh -Y -L localhost:8888:localhost:8888 username@cmslpc-sl7.fnal.gov
+```
+Then you can start jupyter notebook *after* activating the coffeaenv 
+```
+    voms-proxy-init --rfc --voms cms   # To access file on XROOTD
+    jupyter notebook --no-browser   #Start the jupyter server
+```
+
+
 Defining a new analysis
 -------------
 1) Copy analyzers/DummyAnalyzer.cc and replace each instance of "DummyAnalyzer" with the name of your desired analyzer.
@@ -74,6 +94,19 @@ Before submitting jobs, make sure proxy and CMSSW environment is setup.
   * ```scripts_condor/submit_normalize_muonsystem_*.sh```
   * Check ```outputDir``` and ```inputDir```
   
+### Submit condor jobs in LPC
+
+The `submitJob_LPC_llp.py` script submit the analyzer `Runllp_hnl_analyzer` to LPC condor queue
+
+Example command: 
+```
+python submitJob_LPC_llp.py -l Razor2018_17SeptEarlyReReco --isData no --optionNumber 01 --njobs 5 -i lists/test.txt -o HNL/
+```
+
+For local testing:
+```
+./Runllp_hnl_analyzer ./lists/test.txt -f=test.root --isData=no --optionLabel=Razor2018_17SeptEarlyReReco --optionNumber=01
+```
 
 Normalizing the processed ntuples
 ------------
@@ -87,7 +120,6 @@ See lists/filestonormalize/testTTJets.txt for an example input file to be used w
 * Create input file list using ```scripts/create_normalize_txt.py```
 
 The script ```hadd_llp_bkg.sh``` automatically hadd and normalize the llp_analyzer ROOT files for the background samples.
-
 
 
 ### Hadd ntuples

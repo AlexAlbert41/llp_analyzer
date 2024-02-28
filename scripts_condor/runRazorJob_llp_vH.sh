@@ -35,8 +35,8 @@ then
 	echo "entering directory: ${workDir}"
 	ulimit -c 0
 	source /cvmfs/cms.cern.ch/cmsset_default.sh
-	export SCRAM_ARCH=slc7_amd64_gcc630
-	eval `scram runtime -sh`
+	export SCRAM_ARCH=slc7_amd64_gcc700
+	eval `scramv1 runtime -sh`
 	echo `which root`
 
 	cd ${runDir}
@@ -46,7 +46,7 @@ then
 	then
 		cp $CMSSW_BASE/src/llp_analyzer/RazorRun_T2 ./
 		#get grid proxy
-		export X509_USER_PROXY=${homeDir}x509_proxy
+		#export X509_USER_PROXY=${homeDir}x509_proxy
 		echo "${homeDir}x509_proxy"
 		voms-proxy-info
 
@@ -68,7 +68,7 @@ then
 			echo ./RazorRun_T2 inputfilelistForThisJob_${jobnumber}.txt ${analysisType} -d=${isData} -n=${option} -f=${outputfile} -l=${analyzerTag}
 			./RazorRun_T2 inputfilelistForThisJob_${jobnumber}.txt ${analysisType} -d=${isData} -n=${option} -f=${outputfile} -l=${analyzerTag}
 		fi
-		
+
 		echo ${outputfile}
 		echo ${outputDirectory}
 		ls *root > output.txt
@@ -84,15 +84,12 @@ then
 		##job finished, copy file to T2
 		echo "copying output file to ${outputDirectory}"
 		eval `scram unsetenv -sh`
-		#gfal-mkdir -p davs://xrootd-redir-stageout.ultralight.org:1095/${outputDirectory}
-		#gfal-mkdir -p gsiftp://transfer-lb.ultralight.org//${outputDirectory}	
-		mkdir -p ${outputDirectory}	
+		gfal-mkdir -p gsiftp://transfer.ultralight.org//${outputDirectory}
 		while IFS= read -r line
 		do
-        		echo $line	
-			#gfal-copy -f --checksum-mode=both ${line} davs://xrootd-redir-stageout.ultralight.org:1095/${outputDirectory}/${line}
-			cp  ${line} ${outputDirectory}/${line}
-			if [ -f ${outputDirectory}/${line} ]
+        		echo $line
+			gfal-copy --checksum-mode=both ${line} gsiftp://transfer.ultralight.org//${outputDirectory}/${line}
+			if [ -f /mnt/hadoop/${outputDirectory}/${line} ]
 			then
 				echo ${line} "copied"
 			else

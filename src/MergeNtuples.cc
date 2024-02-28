@@ -181,9 +181,6 @@ int main(int argc, char* argv[]) {
     cout << "Num nTuple Events:" << NEventsTree1 << endl;
     uint NEventsTree2 = theChain->GetEntries();
     cout << "Num AOD Events:" << NEventsTree2 << endl;
-    //theChain->Print();
-    //NEventsTree1 = 10000;
-    //theChain->Print();
     //*****************************************************************************************
     //Make map of event number in tree 1 to event number in tree 2
     //*****************************************************************************************
@@ -200,7 +197,6 @@ int main(int argc, char* argv[]) {
     ra.fChain->SetBranchStatus("run", 1);
     ra.fChain->SetBranchAddress("run", &ra.runNum);
     
-    //cout << ra.muonPt->
     //loop over tree2
     std::vector<std::pair<uint,uint> > eventList2;
     std::vector<bool> matchedevent;
@@ -209,7 +205,9 @@ int main(int argc, char* argv[]) {
     for (uint m=0; m < NEventsTree2;m++) { 
       if ( m % 10000 == 0) cout << "Event " << m << "\n";
       ra.fChain->GetEntry(m);
+        
       std::pair<uint,ULong64_t> p (ra.runNum , ra.eventNum);
+      //cout << " runNum = " <<p.first<<" LS ="<<ra.lumiNum<< " evtNum = "<< p.second << "  \n";
       eventList2.push_back(p);
     }
     
@@ -237,7 +235,6 @@ int main(int argc, char* argv[]) {
       { 
           numberOfNonMatchedEvents++;
           matchedevent.push_back(false);
-        //	cout << "Event " << MuonSystem->runNum << ":" << MuonSystem->evtNum <<" Not Matched\n";
       }
       else{
           matchedevent.push_back(true);
@@ -305,7 +302,6 @@ int main(int argc, char* argv[]) {
     int numFloatBranches = 25; int numIntBranches = 7; int numBoolBranches = 13;
     int numCharBranches = 10;
     
-          
           //nMuons branch
           Int_t fillnMuons;
           ra.fChain->SetBranchStatus("nMuon", 1);
@@ -426,16 +422,19 @@ int main(int argc, char* argv[]) {
         };
 
 
+
+    
+
     
     for (uint n=0; n<NEventsTree1; n++) { 
       if (n%10000==0) cout << "Processed Event " << n << "\n";
 
       //Check if found a match
       if(matchedevent[n] == false) continue; 
-
-      //Get entries
       MuonSystem->tree_->GetEntry(n);
+      
       ra.fChain->GetEntry(EventIndexToEventIndexMap[n]); 
+
       fillnMuons = ra.nMuons;
       fill_HLT_CscCluster_Loose = ra.HLT_CscCluster_Loose;
       fill_HLT_CscCluster_Medium = ra.HLT_CscCluster_Medium;
@@ -471,45 +470,7 @@ int main(int argc, char* argv[]) {
       }
 
 
-
-      
-      //Float_t ptFill[ra.nMuons];
-      
-      //MY CODE FOR MY BRANCHES
-
-      // I DON'T KNOW IF I NEED ANYTHING ELSE BELLOW
-      /*
-      cout<< "about to fill ptFill" << endl;
-      for (int ptIndex = 0; ptIndex < ra.nMuons; ptIndex++) {
-         ptFill.push_back(ra.muonPt[ptIndex]);
-         //ptFill[ptIndex] = ra.muonPt[ptIndex];
-      }
-      for (int ptIndex = 0; ptIndex < ra.nMuons; ptIndex++) {
-         MuonSystem->muonPt[ptIndex]   = ra.muonPt[ptIndex];
-      }
-      */
-      //outputTree->SetBranchAddress("muonPtNew", ptFill);
-      //if (ptFill.size() > 0) {
-      //  cout<<"ptFill size " << ptFill.front() << endl;
-      //}
-
-      //for (Float_t pt : MuonSystem->muonPt){
-      //  cout << "Muon Pt" << pt << "\n";
-      //}
-      //cout << "ptFill size: " << ptFill.size() << endl;
-
-      //cout << MuonSystem->muonPt[0] << endl; 
-      //cout <<MuonSystem->muonPt[0] << endl;
-      //TBranch *ptBranch = outputTree->GetBranch("muonPt");
-      //ptBranch->SetAddress(&MuonSystem->muonPt);
-      //cout<<MuonmuonPt[0]<<endl;
-      //cout << "here" << endl;
-        //for (Float_t pt : ra.muonPt){
-         //cout << "Muon Pt" << pt << "\n";
-        //}
-
-
-      /*//Copy branches from big nTuple CODE FROM BEFORE
+      /*//Copy branches from big nTuple 
       MuonSystem->nRpc = ra.nRpc;
       MuonSystem->rho = ra.fixedGridRhoFastjetAll;
       MuonSystem->met = ra.metType1Pt;

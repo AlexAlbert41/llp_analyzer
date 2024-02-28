@@ -107,6 +107,7 @@ void RazorAnalyzer::EnablePileup(){
 }
 
 void RazorAnalyzer::EnableMuons(){
+    
     fChain->SetBranchStatus("muonE", 1);
     fChain->SetBranchStatus("muonPt", 1);
     fChain->SetBranchStatus("muonEta", 1);
@@ -140,6 +141,7 @@ void RazorAnalyzer::EnableMuons(){
     fChain->SetBranchStatus("muon_passSingleMuTagFilter", 1);
     fChain->SetBranchStatus("muon_passHLTFilter", 1);
     
+
 }
 
 void RazorAnalyzer::EnableElectrons(){
