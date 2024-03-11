@@ -13,6 +13,7 @@
 #include "HNLMuonSystemTree.h"
 #include "RazorHelper.h"
 #include <vector>
+#include "TString.h"
 using namespace std;
 
 
@@ -101,8 +102,6 @@ struct largest_pt_jet
 }
 //get list of files to open, add normalization branch to the tree in each file
 int main(int argc, char* argv[]) {
-    //int minEventNum = 450000;
-    //int maxEventNum = 500000;
     //parse input list to get names of ROOT files
     if(argc < 4){
         cerr << "usage MergeNtuple [inputfile1] [inputfile2] [outputfile] [isData]" << endl;
@@ -192,11 +191,12 @@ int main(int argc, char* argv[]) {
     ra.EnableAll();
     
     ra.fChain->SetBranchStatus("event", 1);
-    ra.fChain->SetBranchAddress("event", &ra.eventNum);
+    ra.fChain->SetBranchAddress("event", &ra.evtNumLong);
 
     ra.fChain->SetBranchStatus("run", 1);
     ra.fChain->SetBranchAddress("run", &ra.runNum);
     
+    //cout << ra.muonPt->
     //loop over tree2
     std::vector<std::pair<uint,uint> > eventList2;
     std::vector<bool> matchedevent;
@@ -205,8 +205,7 @@ int main(int argc, char* argv[]) {
     for (uint m=0; m < NEventsTree2;m++) { 
       if ( m % 10000 == 0) cout << "Event " << m << "\n";
       ra.fChain->GetEntry(m);
-        
-      std::pair<uint,ULong64_t> p (ra.runNum , ra.eventNum);
+      std::pair<uint,ULong64_t> p (ra.runNum , ra.evtNumLong);
       //cout << " runNum = " <<p.first<<" LS ="<<ra.lumiNum<< " evtNum = "<< p.second << "  \n";
       eventList2.push_back(p);
     }
@@ -217,7 +216,6 @@ int main(int argc, char* argv[]) {
     for (uint n=0;n<NEventsTree1;n++) { 
       MuonSystem->tree_->GetEntry(n); 
       if ( n % 10000 == 0) cout << "Event " << n << "\n";
-      //loop over tree2
       bool matchFound = false;
       for (uint m=0; m < eventList2.size();m++) 
       { 
@@ -226,7 +224,6 @@ int main(int argc, char* argv[]) {
           	//if matched, then add entry to the map
           	EventIndexToEventIndexMap[n] = m;
             cout << "Match  at Index: " << n << " --> " << m << "\n";
-          	//cout << "Match : " << n << " --> " << m << "\n";
           	matchFound = true;
           	break;
       }            
@@ -235,7 +232,6 @@ int main(int argc, char* argv[]) {
       { 
           numberOfNonMatchedEvents++;
           matchedevent.push_back(false);
-      }
       else{
           matchedevent.push_back(true);
       }
@@ -255,6 +251,7 @@ int main(int argc, char* argv[]) {
     outputFile->cd();
     
     std::vector<std::string> removeBranches{
+        "nMuons"
         "muonE",
         "muonPt",
         "muonEta",
@@ -302,6 +299,7 @@ int main(int argc, char* argv[]) {
     int numFloatBranches = 25; int numIntBranches = 7; int numBoolBranches = 13;
     int numCharBranches = 10;
     
+          
           //nMuons branch
           Int_t fillnMuons;
           ra.fChain->SetBranchStatus("nMuon", 1);
@@ -337,8 +335,8 @@ int main(int argc, char* argv[]) {
             "Muon_pfRelIso03_chg", "Muon_pfRelIso04_all", "Muon_phi", "Muon_pt", "Muon_ptErr", "Muon_segmentComp", 
             "Muon_sip3d", "Muon_softMva", "Muon_tkRelIso", "Muon_tunepRelPt"
           };
-
-        std::vector<Float_t> addBranchesInputVarFloat[numFloatBranches]{};
+        int nMuon = 200;
+        Float_t addBranchesInputVarFloat[numFloatBranches][nMuon]={0};
 
         Float_t* addBranchesRazorVarFloat[numFloatBranches]{
           ra.muon_dxy, ra.muon_dxyErr, ra.muon_dxybs, ra.muon_dz, ra.muon_dzErr, ra.muon_eta,
@@ -351,7 +349,8 @@ int main(int argc, char* argv[]) {
         
         for (int i=0; i<numFloatBranches; i++){
           cout << "Adding Branch: " << addBranchNamesFloat[i] << "\n";
-          outputTree->Branch(addBranchNamesFloat[i], "[numMuons]/F", &addBranchesInputVarFloat[i]);
+          //std::string branchName = addBranchNamesFloat[i];
+          outputTree->Branch(addBranchNamesFloat[i], addBranchesInputVarFloat[i], TString::Format("%s[nMuon]/F", addBranchNamesFloat[i]));
           ra.fChain->SetBranchStatus(addBranchNamesFloat[i], 1);
           ra.fChain->SetBranchAddress(addBranchNamesFloat[i], addBranchesRazorVarFloat[i]);
         }
@@ -362,7 +361,7 @@ int main(int argc, char* argv[]) {
         "Muon_nTrackerLayers", "Muon_pdgId", "Muon_tightCharge"
           };
         
-        std::vector<Int_t> addBranchesInputVarInt[numIntBranches]{};
+        Int_t addBranchesInputVarInt[numIntBranches][nMuon]={0};
 
         Int_t* addBranchesRazorVarInt[numIntBranches]{
           ra.muon_charge, ra.muon_fsrPhotonIdx, ra.muon_jetIdx, ra.muon_nStations,
@@ -371,7 +370,7 @@ int main(int argc, char* argv[]) {
 
         for (int i=0; i<numIntBranches; i++){
           cout << "Adding Branch: " << addBranchNamesInt[i] << "\n";
-          outputTree->Branch(addBranchNamesInt[i], "[numMuons]/I", &addBranchesInputVarInt[i]);
+          outputTree->Branch(addBranchNamesInt[i], addBranchesInputVarInt[i], TString::Format("%s[nMuon]/I", addBranchNamesInt[i]));
           ra.fChain->SetBranchStatus(addBranchNamesInt[i], 1);
           ra.fChain->SetBranchAddress(addBranchNamesInt[i], addBranchesRazorVarInt[i]);
         };
@@ -383,7 +382,7 @@ int main(int argc, char* argv[]) {
         "Muon_triggerIdLoose"
         };
 
-        std::vector<Bool_t> addBranchesInputVarBool[numBoolBranches]{};
+        Bool_t addBranchesInputVarBool[numBoolBranches][nMuon] = {0};
 
         Bool_t* addBranchesRazorVarBool[numBoolBranches]{
           ra.muon_highPurity, ra.muon_inTimeMuon, ra.muon_isGlobal, ra.muon_isPFcand,
@@ -394,7 +393,7 @@ int main(int argc, char* argv[]) {
 
         for (int i=0; i<numBoolBranches; i++){
           cout << "Adding Branch: " << addBranchNamesBool[i] << "\n";
-          outputTree->Branch(addBranchNamesBool[i], "[numMuons]/O", &addBranchesInputVarBool[i]);
+          outputTree->Branch(addBranchNamesBool[i], addBranchesInputVarBool[i], TString::Format("%s[nMuon]/O", addBranchNamesBool[i]));
           ra.fChain->SetBranchStatus(addBranchNamesBool[i], 1);
           ra.fChain->SetBranchAddress(addBranchNamesBool[i], addBranchesRazorVarBool[i]);
         };
@@ -406,7 +405,7 @@ int main(int argc, char* argv[]) {
           "Muon_puppiIsoId", "Muon_tkIsoId"
         };
 
-        std::vector<UChar_t> addBranchesInputVarChar[numCharBranches]{};
+        UChar_t addBranchesInputVarChar[numCharBranches][nMuon] = {0};
 
         UChar_t* addBranchesRazorVarChar[numCharBranches]{
           ra.muon_cleanmask, ra.muon_highPtId, ra.muon_jetNDauCharged, ra.muon_miniIsoId,
@@ -416,7 +415,7 @@ int main(int argc, char* argv[]) {
 
         for (int i=0; i<numCharBranches; i++){
           cout << "Adding Branch: " << addBranchNamesChar[i] << "\n";
-          outputTree->Branch(addBranchNamesChar[i], "[numMuons]/C", &addBranchesInputVarChar[i]);
+          outputTree->Branch(addBranchNamesChar[i], addBranchesInputVarChar[i], TString::Format("%s[nMuon]/b", addBranchNamesChar[i]));
           ra.fChain->SetBranchStatus(addBranchNamesChar[i], 1);
           ra.fChain->SetBranchAddress(addBranchNamesChar[i], addBranchesRazorVarChar[i]);
         };
@@ -425,15 +424,17 @@ int main(int argc, char* argv[]) {
 
     
 
-    
-    for (uint n=0; n<NEventsTree1; n++) { 
+    int numEventsProcess = NEventsTree1;
+    for (uint n=0; n<numEventsProcess; n++) { 
       if (n%10000==0) cout << "Processed Event " << n << "\n";
 
       //Check if found a match
-      if(matchedevent[n] == false) continue; 
+      if(matchedevent[n] == false) continue; //#UNCOMMENT#######
+
+      //Get entries
       MuonSystem->tree_->GetEntry(n);
-      
-      ra.fChain->GetEntry(EventIndexToEventIndexMap[n]); 
+      ra.fChain->GetEntry(EventIndexToEventIndexMap[n]); //#UNCOMMENT#######
+      //ra.fChain->GetEntry(n); //#COMMENT#######
 
       fillnMuons = ra.nMuons;
       fill_HLT_CscCluster_Loose = ra.HLT_CscCluster_Loose;
@@ -441,34 +442,110 @@ int main(int argc, char* argv[]) {
       fill_HLT_CscCluster_Tight = ra.HLT_CscCluster_Tight;
 
       for (int i=0; i<numFloatBranches; i++){
-        addBranchesInputVarFloat[i].clear();
         for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarFloat[i].push_back(addBranchesRazorVarFloat[i][j]);
+          addBranchesInputVarFloat[i][j]=addBranchesRazorVarFloat[i][j];
       }
       }
 
       for (int i=0; i<numIntBranches; i++){
-        addBranchesInputVarInt[i].clear();
         for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarInt[i].push_back(addBranchesRazorVarInt[i][j]);
+          addBranchesInputVarInt[i][j]=addBranchesRazorVarInt[i][j];
       }
       }
 
       for (int i=0; i<numBoolBranches; i++){
-        addBranchesInputVarBool[i].clear();
         for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarBool[i].push_back(addBranchesRazorVarBool[i][j]);
+          addBranchesInputVarBool[i][j]=addBranchesRazorVarBool[i][j];
       }
       }
 
 
       for (int i=0; i<numCharBranches; i++){
-        addBranchesInputVarChar[i].clear();
+        //addBranchesInputVarChar[i].clear();
         for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarChar[i].push_back(addBranchesRazorVarChar[i][j]);
+          addBranchesInputVarChar[i][j]=addBranchesRazorVarChar[i][j];
       }
       }
 
+
+
+      
+      //Float_t ptFill[ra.nMuons];
+      
+      //MY CODE FOR MY BRANCHES
+
+      // I DON'T KNOW IF I NEED ANYTHING ELSE BELLOW
+      /*
+      cout<< "about to fill ptFill" << endl;
+      for (int ptIndex = 0; ptIndex < ra.nMuons; ptIndex++) {
+         ptFill.push_back(ra.muonPt[ptIndex]);
+         //ptFill[ptIndex] = ra.muonPt[ptIndex];
+      }
+      for (int ptIndex = 0; ptIndex < ra.nMuons; ptIndex++) {
+         MuonSystem->muonPt[ptIndex]   = ra.muonPt[ptIndex];
+      }
+      */
+      //outputTree->SetBranchAddress("muonPtNew", ptFill);
+      //if (ptFill.size() > 0) {
+      //  cout<<"ptFill size " << ptFill.front() << endl;
+      //}
+
+      //for (Float_t pt : MuonSystem->muonPt){
+      //  cout << "Muon Pt" << pt << "\n";
+      //}
+      //cout << "ptFill size: " << ptFill.size() << endl;
+
+      //cout << MuonSystem->muonPt[0] << endl; 
+      //cout <<MuonSystem->muonPt[0] << endl;
+      //TBranch *ptBranch = outputTree->GetBranch("muonPt");
+      //ptBranch->SetAddress(&MuonSystem->muonPt);
+      //cout<<MuonmuonPt[0]<<endl;
+      //cout << "here" << endl;
+        //for (Float_t pt : ra.muonPt){
+         //cout << "Muon Pt" << pt << "\n";
+        //}
+
+
+      /* BRANCHES TO MERGE for MUONS (nTuple branch -> AOD branch)
+      nMuons->nMuon
+      muonE->Muon_mass              ???
+      muonPt->Muon_pt
+      muonEta->Muon_eta
+      muonPhi->Muon_phi
+      muonCharge->Muon_charge
+      muonIsLoose->Muon_looseId
+      muonIsMedium->Muon_mediumId
+      muonIsTight->Muon_tightId
+      muon_d0->Muon_dxy              ???
+      muon_dZ->Muon_dz
+      muon_ip3d->Muon_ip3d
+      muon_ip3dSignificance->Muon_sip3d
+      muonType->                    ???
+      muonQualitty->                ???
+      muon_pileupIso->              ???
+      muon_chargedIso->             ???
+      muon_photonIso->              ???
+      muon_neutralHadIso->          ???
+      muon_ptrel-> Muon_tunepRelPt                 ???
+      muon_chargedMiniIso->Muon_miniPFRelIso_chg ->      ???
+      muon_photonAndNeutralHadronMiniIso ->             ???
+      muon_chargedPileupMiniIso ->                       ???
+      muon_activityMiniIsoAnnulus ->                     ???
+      muon_passSingleMuTagFilter ->                     ???
+      muon_passHLTFilter ->                             ???
+      muon_validFractionTrackerHits ->                  ???
+      muon_isGlobal -> Muon_isGlobal
+      muon_normChi2 ->                                  ???
+      muon_chi2LocalPosition ->                         ???
+      muon_kinkFinder ->                                ???
+      muon_segmentCompatability ->  Muon_segmentComp
+      muonIsICHEPMedium ->                              ???
+
+      Branches TO ADD for HLT (AOD branch) (no existing nTuple branch it appears)
+      HLT_CscCluster_Loose
+      HLT_CscCluster_Medium
+      HLT_CscCluster_Tight
+      */
 
       /*//Copy branches from big nTuple 
       MuonSystem->nRpc = ra.nRpc;
@@ -977,12 +1054,15 @@ int main(int argc, char* argv[]) {
       
 
       //Fill out tree if conditions are met
-      outputTree->Fill();		
+      outputTree->Fill();	
+      addBranchesInputVarFloat[numFloatBranches][nMuon]={0};	
+      addBranchesInputVarInt[numFloatBranches][nMuon]={0};
+      addBranchesInputVarBool[numFloatBranches][nMuon]={0};
+      addBranchesInputVarChar[numFloatBranches][nMuon]={0};			
     }
     //save information
     outputFile->cd();
     outputTree->Write();
-    cout << "Closing output file." << endl;
     outputFile->Close();
     delete outputFile;
     
