@@ -150,7 +150,25 @@ public :
    Bool_t          HLT_CscCluster_Loose;   
    Bool_t          HLT_CscCluster_Medium;  
    Bool_t          HLT_CscCluster_Tight; 
-   
+   Bool_t          HLT_IsoMu20;
+   Bool_t          HLT_IsoMu24;
+   //added L1 bool variables
+   Bool_t          L1_SingleMuShower_Nominal;
+   Bool_t          L1_SingleMuShower_Tight;
+   //added trigger object variables
+   Int_t           nTrigObj;
+   Float_t         TrigObj_eta[200];   //[nTrigObj]
+   Float_t         TrigObj_l1pt[200];   //[nTrigObj]
+   Float_t         TrigObj_l1pt_2[200];   //[nTrigObj]
+   Float_t         TrigObj_l2pt[200];   //[nTrigObj]
+   Float_t         TrigObj_phi[200];   //[nTrigObj]
+   Float_t         TrigObj_pt[200];   //[nTrigObj]
+   Int_t           TrigObj_filterBits[200];   //[nTrigObj]
+   Int_t           TrigObj_id[200];   //[nTrigObj]
+   Int_t           TrigObj_l1charge[200];   //[nTrigObj]
+   Int_t           TrigObj_l1iso[200];   //[nTrigObj]
+
+
    Int_t           nElectrons;
    Float_t         eleE[50];   //[nElectrons]
    Float_t         elePt[50];   //[nElectrons]
