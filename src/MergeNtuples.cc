@@ -498,8 +498,8 @@ int main(int argc, char* argv[]) {
         }
     
 
-    //int numEventsProcess = NEventsTree1;
-    int numEventsProcess = 100000;
+    int numEventsProcess = NEventsTree1;
+    //int numEventsProcess = 100000;
      cout<<"About to fill muon bool branches"<<endl;
     for (uint n=0; n<numEventsProcess; n++) { 
       if (n%10000==0) cout << "Processed Event " << n << "\n";
