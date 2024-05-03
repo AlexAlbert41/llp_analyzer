@@ -198,15 +198,14 @@ int main(int argc, char* argv[]) {
     
     //cout << ra.muonPt->
     //loop over tree2
-    std::vector<std::pair<uint, ulong>> eventList2;
+    std::vector<std::pair<uint,uint> > eventList2;
     std::vector<bool> matchedevent;
-    //NEventsTree2 = 100000; //comment
-    cout << "building tree 2 index map (razor) \n";
     
+    cout << "building tree 2 index map (razor) \n";
     for (uint m=0; m < NEventsTree2;m++) { 
       if ( m % 10000 == 0) cout << "Event " << m << "\n";
       ra.fChain->GetEntry(m);
-      std::pair<uint, ulong> p(ra.runNum, ra.evtNumLong);
+      std::pair<uint,ULong64_t> p (ra.runNum , ra.evtNumLong);
       //cout << " runNum = " <<p.first<<" LS ="<<ra.lumiNum<< " evtNum = "<< p.second << "  \n";
       eventList2.push_back(p);
     }
@@ -241,7 +240,7 @@ int main(int argc, char* argv[]) {
     }
     cout << "Matched events    = "<< NEventsTree1-numberOfNonMatchedEvents << " / " << NEventsTree1 <<" \n";
     cout << "Un-Matched events = "<< numberOfNonMatchedEvents << " / " << NEventsTree1 <<" \n";
-    
+
     //*****************************************************************************************
     //Produce Output Tree
     //*****************************************************************************************       
@@ -295,17 +294,12 @@ int main(int argc, char* argv[]) {
     RazorHelper *helper = 0;
     bool isData = true;
     
-
-    //tree just for muon bools:
-    TTree* outputTree_MuonBool = MuonSystem->tree_->CloneTree(0);
     //helper = new RazorHelper(analysisTag, isData, false);
   
     //loop over Tree1 and add all the branches from tree2
     int numFloatBranches = 25; int numIntBranches = 7; int numBoolBranches = 13;
     int numCharBranches = 10;
     
-    //do the same things, but for branches for which the number of entries is the number of trigger objects in event
-    int numFloatBranchesTrig = 6; int numIntBranchesTrig = 4;
           
           //nMuons branch
           Int_t fillnMuons;
@@ -314,13 +308,6 @@ int main(int argc, char* argv[]) {
           cout << "Adding Branch: " << "nMuon" << "\n";
           outputTree->Branch("nMuon", &fillnMuons, "nMuon/I");
           
-          //filling trigger objects branches
-          Int_t fillnTrigObj;
-          ra.fChain->SetBranchStatus("nTrigObj", 1);
-          ra.fChain->SetBranchAddress("nTrigObj", &ra.nTrigObj);
-          cout << "Adding Branch: " << "nTrigObj" << "\n";
-          outputTree->Branch("nTrigObj", &fillnTrigObj, "nTrigObj/I"); 
-
           //bool branches
           Bool_t fill_HLT_CscCluster_Loose;
           ra.fChain->SetBranchStatus("HLT_CscCluster_Loose", 1);
@@ -340,32 +327,8 @@ int main(int argc, char* argv[]) {
           cout << "Adding Branch: " << "HLT_CscCluster_Tight" << "\n";
           outputTree->Branch("HLT_CscCluster_Tight", &fill_HLT_CscCluster_Tight, "HLT_CscCluster_Tight/O");
 
-          Bool_t fill_HLT_IsoMu20;
-          ra.fChain->SetBranchStatus("HLT_IsoMu20", 1);
-          ra.fChain->SetBranchAddress("HLT_IsoMu20", &ra.HLT_IsoMu20);
-          cout << "Adding Branch: " << "HLT_IsoMu20" << "\n";
-          outputTree->Branch("HLT_IsoMu20", &fill_HLT_IsoMu20, "HLT_IsoMu20/O");
           
-          Bool_t fill_HLT_IsoMu24;
-          ra.fChain->SetBranchStatus("HLT_IsoMu24", 1);
-          ra.fChain->SetBranchAddress("HLT_IsoMu24", &ra.HLT_IsoMu24);
-          cout << "Adding Branch: " << "HLT_IsoMu24" << "\n";
-          outputTree->Branch("HLT_IsoMu24", &fill_HLT_IsoMu24, "HLT_IsoMu24/O");
-
-          Bool_t fill_L1_SingleMuShower_Nominal;
-          ra.fChain->SetBranchStatus("L1_SingleMuShower_Nominal", 1);
-          ra.fChain->SetBranchAddress("L1_SingleMuShower_Nominal", &ra.L1_SingleMuShower_Nominal);
-          cout << "Adding Branch: " << "L1_SingleMuShower_Nominal" << "\n";
-          outputTree->Branch("L1_SingleMuShower_Nominal", &fill_L1_SingleMuShower_Nominal, "L1_SingleMuShower_Nominal/O");
-
-          Bool_t fill_L1_SingleMuShower_Tight;
-          ra.fChain->SetBranchStatus("L1_SingleMuShower_Tight", 1);
-          ra.fChain->SetBranchAddress("L1_SingleMuShower_Tight", &ra.L1_SingleMuShower_Tight);
-          cout << "Adding Branch: " << "L1_SingleMuShower_Tight" << "\n";
-          outputTree->Branch("L1_SingleMuShower_Tight", &fill_L1_SingleMuShower_Tight, "L1_SingleMuShower_Tight/O");
-
-          int nMuon = 200; int nTrigObj = 200;
-
+          
           const char* addBranchNamesFloat[numFloatBranches] {
             "Muon_dxy", "Muon_dxyErr", "Muon_dxybs", "Muon_dz", "Muon_dzErr", "Muon_eta",
             "Muon_ip3d", "Muon_jetPtRelv2", "Muon_jetRelIso", "Muon_mass", "Muon_miniPFRelIso_all", 
@@ -373,7 +336,7 @@ int main(int argc, char* argv[]) {
             "Muon_pfRelIso03_chg", "Muon_pfRelIso04_all", "Muon_phi", "Muon_pt", "Muon_ptErr", "Muon_segmentComp", 
             "Muon_sip3d", "Muon_softMva", "Muon_tkRelIso", "Muon_tunepRelPt"
           };
-        
+        int nMuon = 200;
         Float_t addBranchesInputVarFloat[numFloatBranches][nMuon]={0};
 
         Float_t* addBranchesRazorVarFloat[numFloatBranches]{
@@ -416,16 +379,16 @@ int main(int argc, char* argv[]) {
         const char* addBranchNamesBool[numBoolBranches] {
         "Muon_highPurity", "Muon_inTimeMuon", "Muon_isGlobal", "Muon_isPFcand", 
         "Muon_isStandalone", "Muon_isTracker", "Muon_looseId", "Muon_mediumId",
-        "Muon_mediumPromptId", "Muon_softId", "Muon_tightId", "Muon_softMvaId",
+        "Muon_mediumPromptId", "Muon_softId", "Muon_softMvaId", "Muon_tightId",
         "Muon_triggerIdLoose"
         };
 
         Bool_t addBranchesInputVarBool[numBoolBranches][nMuon] = {0};
-        //ra.muon_softMvaId
+
         Bool_t* addBranchesRazorVarBool[numBoolBranches]{
           ra.muon_highPurity, ra.muon_inTimeMuon, ra.muon_isGlobal, ra.muon_isPFcand,
           ra.muon_isStandalone, ra.muon_isTracker, ra.muon_looseId, ra.muon_mediumId,
-          ra.muon_mediumPromptId, ra.muon_softId, ra.muon_tightId, ra.muon_softMvaId,
+          ra.muon_mediumPromptId, ra.muon_softId, ra.muon_softMvaId, ra.muon_tightId,
           ra.muon_triggerIdLoose
         };
 
@@ -458,71 +421,11 @@ int main(int argc, char* argv[]) {
           ra.fChain->SetBranchAddress(addBranchNamesChar[i], addBranchesRazorVarChar[i]);
         };
 
-        //repeat for trigger objects
-        const char* addBranchNamesFloat_Trig[numFloatBranchesTrig]{
-          "TrigObj_eta", "TrigObj_l1pt", "TrigObj_l1pt_2", "TrigObj_l2pt", "TrigObj_phi", "TrigObj_pt"
-        };
-        
-        Float_t addBranchesInputVarFloat_Trig[numFloatBranchesTrig][nTrigObj]={0};
 
-        Float_t* addBranchesRazorVarFloat_Trig[numFloatBranchesTrig]{
-          ra.TrigObj_eta, ra.TrigObj_l1pt, ra.TrigObj_l1pt_2, ra.TrigObj_l2pt, ra.TrigObj_phi, ra.TrigObj_pt
-        };
-        
-        
-        for (int i=0; i<numFloatBranchesTrig; i++){
-          cout << "Adding Branch: " << addBranchNamesFloat_Trig[i] << "\n";
-          //std::string branchName = addBranchNamesFloat[i];
-          outputTree->Branch(addBranchNamesFloat_Trig[i], addBranchesInputVarFloat_Trig[i], TString::Format("%s[nTrigObj]/F", addBranchNamesFloat_Trig[i]));
-          ra.fChain->SetBranchStatus(addBranchNamesFloat_Trig[i], 1);
-          ra.fChain->SetBranchAddress(addBranchNamesFloat_Trig[i], addBranchesRazorVarFloat_Trig[i]);
-        }
 
-        const char* addBranchNamesInt_Trig[numIntBranchesTrig]{
-          "TrigObj_filterBits", "TrigObj_id", "TrigObj_l1charge", "TrigObj_l1iso"
-        };
-        
-
-        Int_t addBranchesInputVarInt_Trig[numIntBranchesTrig][nTrigObj]={0};
-
-        Int_t* addBranchesRazorVarInt_Trig[numIntBranchesTrig]{
-          ra.TrigObj_filterBits, ra.TrigObj_id, ra.TrigObj_l1charge, ra.TrigObj_l1iso
-        };
-        
-        for (int i=0; i<numIntBranchesTrig; i++){
-          cout << "Adding Branch: " << addBranchNamesInt_Trig[i] << "\n";
-          //std::string branchName = addBranchNamesFloat[i];
-          outputTree->Branch(addBranchNamesInt_Trig[i], addBranchesInputVarInt_Trig[i], TString::Format("%s[nTrigObj]/I", addBranchNamesInt_Trig[i]));
-          ra.fChain->SetBranchStatus(addBranchNamesInt_Trig[i], 1);
-          ra.fChain->SetBranchAddress(addBranchNamesInt_Trig[i], addBranchesRazorVarInt_Trig[i]);
-        }
     
 
     int numEventsProcess = NEventsTree1;
-    //int numEventsProcess = 100000;
-     cout<<"About to fill muon bool branches"<<endl;
-    for (uint n=0; n<numEventsProcess; n++) { 
-      if (n%10000==0) cout << "Processed Event " << n << "\n";
-      //cout << "Processed Event " << n << "\n";
-      if(matchedevent[n] == false) continue;
-      MuonSystem->tree_->GetEntry(n);
-      ra.fChain->GetEntry(EventIndexToEventIndexMap[n]); //#UNCOMMENT#######
-      //ra.fChain->GetEntry(n); //#COMMENT#######
-      //cout<<"NTrigObj = "<<ra.nTrigObj<<endl;
-      //cout<<"NMuons = "<<ra.nMuons<<endl;
-      //cout<<"About to define event variables"<<endl;
-      fillnMuons = ra.nMuons;
-      for (int i=0; i<numBoolBranches; i++){
-        //cout<<addBranchNamesBool[i]<<endl;
-        for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarBool[i][j]=addBranchesRazorVarBool[i][j];
-      }
-      }
-      outputTree_MuonBool->Fill();	
-      addBranchesInputVarBool[numBoolBranches][nMuon]={0};
-
-    }
-    cout<<"About to fill all other branches"<<endl;
     for (uint n=0; n<numEventsProcess; n++) { 
       if (n%10000==0) cout << "Processed Event " << n << "\n";
 
@@ -530,47 +433,33 @@ int main(int argc, char* argv[]) {
       if(matchedevent[n] == false) continue; //#UNCOMMENT#######
 
       //Get entries
-      //cout<<"About to get entry"<<endl;
       MuonSystem->tree_->GetEntry(n);
       ra.fChain->GetEntry(EventIndexToEventIndexMap[n]); //#UNCOMMENT#######
       //ra.fChain->GetEntry(n); //#COMMENT#######
-      //cout<<"NTrigObj = "<<ra.nTrigObj<<endl;
-      //cout<<"NMuons = "<<ra.nMuons<<endl;
-      //cout<<"About to define event variables"<<endl;
-      fillnMuons = ra.nMuons; 
-      //cout<<"About to define event variables: nTrigObj"<<endl;
-      fillnTrigObj = ra.nTrigObj;
-      //cout<<"About to define event variables: Cluster decisions"<<endl;
+
+      fillnMuons = ra.nMuons;
       fill_HLT_CscCluster_Loose = ra.HLT_CscCluster_Loose;
       fill_HLT_CscCluster_Medium = ra.HLT_CscCluster_Medium;
       fill_HLT_CscCluster_Tight = ra.HLT_CscCluster_Tight;
-      //cout<<"About to define event variables: isomuon decisions"<<endl;
-      fill_HLT_IsoMu20 = ra.HLT_IsoMu20;
-      fill_HLT_IsoMu24 = ra.HLT_IsoMu24;
-      //cout<<"About to define event variables: L1 decisions"<<endl;
-      fill_L1_SingleMuShower_Nominal = ra.L1_SingleMuShower_Nominal;
-      fill_L1_SingleMuShower_Tight = ra.L1_SingleMuShower_Tight;
-      //cout<<"About to fill muon float branches"<<endl;
+
       for (int i=0; i<numFloatBranches; i++){
         for (int j=0; j<ra.nMuons; j++){
           addBranchesInputVarFloat[i][j]=addBranchesRazorVarFloat[i][j];
       }
       }
-      //cout<<"About to fill muon int branches"<<endl;
+
       for (int i=0; i<numIntBranches; i++){
         for (int j=0; j<ra.nMuons; j++){
           addBranchesInputVarInt[i][j]=addBranchesRazorVarInt[i][j];
       }
       }
-      //cout<<"About to fill muon bool branches"<<endl;
-      /*
+
       for (int i=0; i<numBoolBranches; i++){
         for (int j=0; j<ra.nMuons; j++){
           addBranchesInputVarBool[i][j]=addBranchesRazorVarBool[i][j];
       }
       }
-      */
-      //cout<<"About to fill muon char branches"<<endl;
+
 
       for (int i=0; i<numCharBranches; i++){
         //addBranchesInputVarChar[i].clear();
@@ -578,22 +467,9 @@ int main(int argc, char* argv[]) {
           addBranchesInputVarChar[i][j]=addBranchesRazorVarChar[i][j];
       }
       }
-      
-      //repeat for trigger objects
-      
-      //cout<<"About to fill trig float branches"<<endl;
-      for (int i=0; i<numFloatBranchesTrig; i++){
-        for (int j=0; j<ra.nTrigObj; j++){
-          addBranchesInputVarFloat_Trig[i][j]=addBranchesRazorVarFloat_Trig[i][j];
-      }
-      }
-      //cout<<"About to fill trig int branches"<<endl;
-      for (int i=0; i<numIntBranchesTrig; i++){
-        for (int j=0; j<ra.nTrigObj; j++){
-          addBranchesInputVarInt_Trig[i][j]=addBranchesRazorVarInt_Trig[i][j];
-      }
-      }
-      
+
+
+
       
       //Float_t ptFill[ra.nMuons];
       
@@ -1181,35 +1057,11 @@ int main(int argc, char* argv[]) {
       //Fill out tree if conditions are met
       outputTree->Fill();	
       addBranchesInputVarFloat[numFloatBranches][nMuon]={0};	
-      addBranchesInputVarInt[numIntBranches][nMuon]={0};
-      addBranchesInputVarBool[numBoolBranches][nMuon]={0};
-      addBranchesInputVarChar[numCharBranches][nMuon]={0};
-
-      
-      addBranchesInputVarFloat_Trig[numFloatBranchesTrig][nTrigObj]={0};	
-      addBranchesInputVarInt_Trig[numIntBranchesTrig][nTrigObj]={0};	
-      
+      addBranchesInputVarInt[numFloatBranches][nMuon]={0};
+      addBranchesInputVarBool[numFloatBranches][nMuon]={0};
+      addBranchesInputVarChar[numFloatBranches][nMuon]={0};			
     }
-    //delete[][] addBranchesInputVarFloat_Trig; delete[][] addBranchesInputVarInt_Trig;
-
-    /*
-    cout<<"About to fill muon bool branches"<<endl;
-    for (uint n=0; n<numEventsProcess; n++) { 
-      //if (n%10000==0) cout << "Processed Event " << n << "\n";
-      cout << "Processed Event " << n << "\n";
-      for (int i=0; i<numBoolBranches; i++){
-        cout<<addBranchNamesBool[i]<<endl;
-        for (int j=0; j<ra.nMuons; j++){
-          addBranchesInputVarBool[i][j]=addBranchesRazorVarBool[i][j];
-      }
-      }
-      outputTree->Fill();	
-      addBranchesInputVarBool[numBoolBranches][nMuon]={0};
-
-    }
-    */
     //save information
-    outputTree->AddFriend(outputTree_MuonBool);
     outputFile->cd();
     outputTree->Write();
     outputFile->Close();
